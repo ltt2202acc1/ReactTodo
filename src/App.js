@@ -1,25 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useCallback, useState } from "react";
+import { TextField, Button, Box } from "@mui/material";
+import { v4 } from "uuid";
+import TodoList from "./components/TodoList";
+export default function App() {
+  const [todoList, setTodoList] = useState([]);
+  const [textInput, setTextInput] = useState("");
 
-function App() {
+  const onTextInputChange = useCallback((e) => {
+    setTextInput(e.target.value);
+  }, []);
+  const onAddBtnClick = useCallback(
+    (e) => {
+      setTodoList([{ id: v4(), name: textInput }, ...todoList]);
+      setTextInput("");
+    },
+    [textInput, todoList]
+  );
+  const onDeleteBtnClick = useCallback(
+    (id) => {
+      const newTodoList = todoList.filter((todo) => todo.id !== id);
+      setTodoList(newTodoList);
+    },
+    [todoList]
+  );
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div>
+      <h1>Danh sách công việc </h1>
+      <Box sx={{ display: "flex" }}>
+        <TextField
+          sx={{ mr: 1 }}
+          size="small"
+          fullWidth
+          id="standard-basic"
+          label="Thêm công việc"
+          variant="outlined"
+          value={textInput}
+          onChange={onTextInputChange}
+        />
+        <Button
+          variant="contained"
+          onClick={onAddBtnClick}
+          disabled={!textInput}
         >
-          Learn React
-        </a>
-      </header>
+          Thêm
+        </Button>
+      </Box>
+      <TodoList
+        todoList={todoList}
+        onDeleteBtnClick={onDeleteBtnClick}
+      ></TodoList>
     </div>
   );
 }
-
-export default App;
